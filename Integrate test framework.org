@@ -1,5 +1,9 @@
 #+TITLE: Integration of test framework to Emacs
 
+#+html_link_home: ./
+#+html_link_up: ./
+
+
 * Summary
 Description of the customizations of the Common Lisp test framework to streamline interaction with tests in emacs.
 

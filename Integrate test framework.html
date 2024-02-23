@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2024-02-23 Fri 15:52 -->
+<!-- 2024-02-23 Fri 16:15 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Integration of test framework to Emacs</title>
@@ -194,12 +194,17 @@
 </style>
 </head>
 <body>
-<div id="content" class="content">
+<div id="org-div-home-and-up">
+ <a accesskey="h" href="./"> UP </a>
+ |
+ <a accesskey="H" href="./"> HOME </a>
+</div><div id="content" class="content">
 <h1 class="title">Integration of test framework to Emacs</h1>
 
-<div id="outline-container-orgc061a04" class="outline-2">
-<h2 id="orgc061a04">Summary</h2>
-<div class="outline-text-2" id="text-orgc061a04">
+
+<div id="outline-container-org25faf32" class="outline-2">
+<h2 id="org25faf32">Summary</h2>
+<div class="outline-text-2" id="text-org25faf32">
 <p>
 Description of the customizations of the Common Lisp test framework to streamline interaction with tests in emacs.
 </p>
@@ -215,9 +220,9 @@ the framework summaries I checked in past did not cover that.
 </div>
 </div>
 
-<div id="outline-container-org1a5b7ef" class="outline-2">
-<h2 id="org1a5b7ef">Workflow</h2>
-<div class="outline-text-2" id="text-org1a5b7ef">
+<div id="outline-container-org1070b6b" class="outline-2">
+<h2 id="org1070b6b">Workflow</h2>
+<div class="outline-text-2" id="text-org1070b6b">
 <p>
 The current workflow:
 </p>
@@ -234,7 +239,7 @@ The current workflow:
 
 
 
-<div id="org2627f45" class="figure">
+<div id="orgc08d24a" class="figure">
 <p><img src="images/fdsfs.png" alt="fdsfs.png" />
 </p>
 <p><span class="figure-number">Figure 1: </span>Buffer with test results</p>
@@ -243,9 +248,9 @@ The current workflow:
 </div>
 
 
-<div id="outline-container-org6e644b8" class="outline-2">
-<h2 id="org6e644b8">Code under test conventions</h2>
-<div class="outline-text-2" id="text-org6e644b8">
+<div id="outline-container-org631b6d2" class="outline-2">
+<h2 id="org631b6d2">Code under test conventions</h2>
+<div class="outline-text-2" id="text-org631b6d2">
 <p>
 The framework requires some level of cooperation from tested code:
 </p>
@@ -263,9 +268,9 @@ The implementation of code-to-test feature is enabled by these assumptions:
 </div>
 </div>
 
-<div id="outline-container-orgcb907c5" class="outline-2">
-<h2 id="orgcb907c5">Possible improvements</h2>
-<div class="outline-text-2" id="text-orgcb907c5">
+<div id="outline-container-orgd64810b" class="outline-2">
+<h2 id="orgd64810b">Possible improvements</h2>
+<div class="outline-text-2" id="text-orgd64810b">
 <ul class="org-ul">
 <li>I should probably show the generated test results in real time, not as a big chunk when done</li>
 <li>Code cleanup - function names, etc (this is demo quality)</li>
@@ -275,9 +280,9 @@ The implementation of code-to-test feature is enabled by these assumptions:
 </div>
 </div>
 
-<div id="outline-container-org4733ee2" class="outline-2">
-<h2 id="org4733ee2">Implementation</h2>
-<div class="outline-text-2" id="text-org4733ee2">
+<div id="outline-container-orgb656c56" class="outline-2">
+<h2 id="orgb656c56">Implementation</h2>
+<div class="outline-text-2" id="text-orgb656c56">
 <p>
 Entry point is this function (with keybinding in <code>lisp-mode</code>).
 </p>
@@ -382,7 +387,7 @@ And finally bind the relevant commands for the new mode.
 </div>
 </div>
 <div id="postamble" class="status">
-<p class="date">Created: 2024-02-23 Fri 15:52</p>
+<p class="date">Created: 2024-02-23 Fri 16:15</p>
 </div>
 </body>
 </html>
