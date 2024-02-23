@@ -1,0 +1,7 @@
+CL projects
+- [[./tls-server-pocs][Tests of TLS servers]]
+- [[./secret-service][Secret Service API in CL]]
+- [[./http2][HTTP2 server]]
+
+Texts
+- [[file:Integrate test framework.org][Integration of test framework to Emacs]]
