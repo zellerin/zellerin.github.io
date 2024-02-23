@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2024-02-23 Fri 15:15 -->
+<!-- 2024-02-23 Fri 15:52 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Integration of test framework to Emacs</title>
@@ -197,15 +197,15 @@
 <div id="content" class="content">
 <h1 class="title">Integration of test framework to Emacs</h1>
 
-<div id="outline-container-orgf90de48" class="outline-2">
-<h2 id="orgf90de48">Summary</h2>
-<div class="outline-text-2" id="text-orgf90de48">
+<div id="outline-container-orgc061a04" class="outline-2">
+<h2 id="orgc061a04">Summary</h2>
+<div class="outline-text-2" id="text-orgc061a04">
 <p>
 Description of the customizations of the Common Lisp test framework to streamline interaction with tests in emacs.
 </p>
 
 <p>
-The particular framework is combination of Fiasco, SBCL and sly (and emacs and asdf), but this can be probably generalized to sly/.
+The particular framework is combination of Fiasco and sly (and emacs and asdf), but this can be probably generalized to slime and other test frameworks.
 </p>
 
 <p>
@@ -215,26 +215,26 @@ the framework summaries I checked in past did not cover that.
 </div>
 </div>
 
-<div id="outline-container-org0c67be1" class="outline-2">
-<h2 id="org0c67be1">Workflow</h2>
-<div class="outline-text-2" id="text-org0c67be1">
+<div id="outline-container-org1a5b7ef" class="outline-2">
+<h2 id="org1a5b7ef">Workflow</h2>
+<div class="outline-text-2" id="text-org1a5b7ef">
 <p>
 The current workflow:
 </p>
 <ul class="org-ul">
-<li>A key combination (<i>prefix t</i>) when in a Lisp file runs tests relevant to the appropriate asdf package</li>
+<li>A key combination when in a Lisp file runs tests relevant to the appropriate asdf package</li>
 <li>They are displayed in a separate buffer with a special mode - that is, font-locked and with keybindings such as:
 <ul class="org-ul">
 <li><i>g</i> to rerun the test suite</li>
 <li><i>p</i> and <i>n</i> to move to previous/next failure</li>
 </ul></li>
 <li><i>.</i> or <i>M-.</i> is used to jump to the (failing) test definition</li>
-<li>From it, jump to tested function works out-of-box on Sly, but there is also another shortcut to jump from the function to it tests (or to a place where they should be)</li>
+<li>From it, jump to tested function works out-of-box in sly (again, <i>M-.</i>), but there is also another shortcut to jump from the function to it tests (or to a place where they should be)</li>
 </ul>
 
 
 
-<div id="org2c8b7fd" class="figure">
+<div id="org2627f45" class="figure">
 <p><img src="images/fdsfs.png" alt="fdsfs.png" />
 </p>
 <p><span class="figure-number">Figure 1: </span>Buffer with test results</p>
@@ -243,9 +243,9 @@ The current workflow:
 </div>
 
 
-<div id="outline-container-org759f62a" class="outline-2">
-<h2 id="org759f62a">Code under test conventions</h2>
-<div class="outline-text-2" id="text-org759f62a">
+<div id="outline-container-org6e644b8" class="outline-2">
+<h2 id="org6e644b8">Code under test conventions</h2>
+<div class="outline-text-2" id="text-org6e644b8">
 <p>
 The framework requires some level of cooperation from tested code:
 </p>
@@ -263,9 +263,9 @@ The implementation of code-to-test feature is enabled by these assumptions:
 </div>
 </div>
 
-<div id="outline-container-org46a76cb" class="outline-2">
-<h2 id="org46a76cb">Possible improvements</h2>
-<div class="outline-text-2" id="text-org46a76cb">
+<div id="outline-container-orgcb907c5" class="outline-2">
+<h2 id="orgcb907c5">Possible improvements</h2>
+<div class="outline-text-2" id="text-orgcb907c5">
 <ul class="org-ul">
 <li>I should probably show the generated test results in real time, not as a big chunk when done</li>
 <li>Code cleanup - function names, etc (this is demo quality)</li>
@@ -275,9 +275,9 @@ The implementation of code-to-test feature is enabled by these assumptions:
 </div>
 </div>
 
-<div id="outline-container-org4cdc1ab" class="outline-2">
-<h2 id="org4cdc1ab">Implementation</h2>
-<div class="outline-text-2" id="text-org4cdc1ab">
+<div id="outline-container-org4733ee2" class="outline-2">
+<h2 id="org4733ee2">Implementation</h2>
+<div class="outline-text-2" id="text-org4733ee2">
 <p>
 Entry point is this function (with keybinding in <code>lisp-mode</code>).
 </p>
@@ -382,7 +382,7 @@ And finally bind the relevant commands for the new mode.
 </div>
 </div>
 <div id="postamble" class="status">
-<p class="date">Created: 2024-02-23 Fri 15:15</p>
+<p class="date">Created: 2024-02-23 Fri 15:52</p>
 </div>
 </body>
 </html>

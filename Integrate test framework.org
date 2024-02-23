@@ -3,19 +3,19 @@
 * Summary
 Description of the customizations of the Common Lisp test framework to streamline interaction with tests in emacs.
 
-The particular framework is combination of Fiasco, SBCL and sly (and emacs and asdf), but this can be probably generalized to sly/.
+The particular framework is combination of Fiasco and sly (and emacs and asdf), but this can be probably generalized to slime and other test frameworks.
 
 I am not sure whether this is available out-of-box for other test frameworks,
 the framework summaries I checked in past did not cover that.
 
 * Workflow
 The current workflow:
-- A key combination (/prefix t/) when in a Lisp file runs tests relevant to the appropriate asdf package
-- They are displayed in a separate buffer with a special mode - that is, font-locked and with keybindings such as:
++ A key combination when in a Lisp file runs tests relevant to the appropriate asdf package
++ They are displayed in a separate buffer with a special mode - that is, font-locked and with keybindings such as:
   + /g/ to rerun the test suite
   + /p/ and /n/ to move to previous/next failure
-- /./ or /M-./ is used to jump to the (failing) test definition
-- From it, jump to tested function works out-of-box on Sly, but there is also another shortcut to jump from the function to it tests (or to a place where they should be)
++ /./ or /M-./ is used to jump to the (failing) test definition
++ From it, jump to tested function works out-of-box in sly (again, /M-./), but there is also another shortcut to jump from the function to it tests (or to a place where they should be)
 
 
   #+CAPTION: Buffer with test results

@@ -1,8 +1,11 @@
-#+TITLE: TZ index
-CL projects
+#+TITLE: Index of personal documentation.
+
+CL projects (mgl-pax based documentation)
 - [[./tls-server-pocs][Tests of TLS servers]]
 - [[./secret-service][Secret Service API in CL]]
 - [[./http2][HTTP2 server]]
 
 Texts
 - [[file:Integrate test framework.org][Integration of test framework to Emacs]]
+
+[[https://github.com/zellerin/zellerin.github.io][Source of the page]].
