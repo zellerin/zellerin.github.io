@@ -4,6 +4,8 @@ CL projects (mgl-pax based documentation)
 - [[./tls-server-pocs][Tests of TLS servers]]
 - [[./secret-service][Secret Service API in CL]]
 - [[./http2][HTTP2 server]]
+- [[./clip-1.4/][CLIP]] (Common Lisp Instrumentation Package) - resurrection from a 1994 code
+  from University of Massachusetts that standardizes data collection. It was hard to find, but I find it useful.
 
 Texts
 - [[file:Integrate test framework.org][Integration of test framework to Emacs]]
