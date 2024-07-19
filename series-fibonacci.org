@@ -1,0 +1,194 @@
+#+TITLE:       Series as (Scheme) streams
+#+AUTHOR:      Tomas Zellerin
+#+EMAIL:       tomas@zellerin.cz
+#+DATE:        2015-02-03 Tue
+#+URI:         /blog/%y/comparing-cmov-and-jumps-in-sbcl
+#+KEYWORDS:    common-lisp, series
+#+TAGS:        common-lisp, series
+#+LANGUAGE:    en
+#+OPTIONS:     H:3 num:nil toc:nil \n:nil ::t |:t ^:nil -:nil f:t *:t <:t
+#+DESCRIPTION: Series can be used as Scheme streams.
+
+* Series in Lisp
+<2015-02-03 Tue>
+
+I saw on [[http://irreal.org/blog/][Irreal]] a post about [[http://irreal.org/blog/?p%3D3632][implementing streams]] (in
+scheme sense) in CL. That reminded me of the venerable /series/ package
+in Common Lisp (that got to the [[https://www.cs.cmu.edu/Groups/AI/html/cltl/clm/node347.html][appendix to standard]] at one point of
+time) by Waters that provides similar functionality in a different
+way, with better (as far as I can say) optimization potential.
+
+The package can be now loaded from quicklisp.
+#+BEGIN_SRC lisp
+(ql:quickload "series")
+#+END_SRC
+
+While it is not strictly necessary, some things are easier with the
+package installed (e.g., reader macros and package use)
+#+BEGIN_SRC lisp
+(series::install)
+#+END_SRC
+
+Simple usage is like
+#+BEGIN_SRC lisp :exports both
+(series:scan-range :upto 10)
+#+end_src
+
+#+RESULTS:
+: #Z(0 1 2 3 4 5 6 7 8 9 10)
+
+The case in the referref blog was square root of a Fibonacci
+elements. This can be expressed as ~sqrt~ called on Fibonacci sequence:
+#+BEGIN_SRC lisp :exports both
+  (map-fn t #'sqrt
+          (series:scan-fn '(values t t)                     ; two streas/variables
+                          (lambda () (values 0 1))          ; initial elements
+                          (lambda (a b) (values (+ a b) a)) ; shift one element
+                          (lambda (a b) (> a 50))))
+#+END_SRC
+
+#+RESULTS:
+: #Z(0.0 1.0 1.0 1.4142135 1.7320508 2.236068 2.828427 3.6055512 4.582576 5.8309517)
+
+The mapping has its own macro character that can be used to simplify the expression.
+#+BEGIN_SRC lisp
+(#Msqrt   (series:scan-fn '(values t t)
+           (lambda () (values 0 1))
+           (lambda (a b) (values (+ a b) a))
+           (lambda (a b) (> a 50))))
+#+END_SRC
+
+#+RESULTS:
+: #Z(0.0 1.0 1.0 1.4142135 1.7320508 2.236068 2.828427 3.6055512 4.582576 5.8309517 7.4161983 9.433981 12.0 15.264338 19.416489 24.698177 31.416555)
+
+Now it might be nice to factor out definition of an (infinite)
+Fibonacii sequence. The naive definition works:
+#+BEGIN_SRC lisp :exports both
+  (defun fib ()
+    (series:scan-fn
+     '(values integer integer)
+     (lambda () (values 0 1))
+     (lambda (a b) (values (+ a b) a))))
+
+(#Msqrt (cotruncate (fib) (scan-range :upto 10)))
+#+end_src
+
+#+RESULTS:
+: #Z(0.0 1.0 1.0 1.4142135 1.7320508 2.236068 2.828427 3.6055512 4.582576 5.8309517 7.4161983)
+
+However, the collection of sequence is not optimized. E.g., the
+evaluation of sum of first twenty
+#+BEGIN_SRC lisp :results output :exports both
+(defmacro measure (form)
+  "Print data from timing and value of the form to standard output"
+  `(let ((*trace-output* *standard-output*))
+  (print  (time ,form))))
+
+(measure
+  (collect-sum (#Msqrt (cotruncate (fib) (scan-range :upto 20)))))
+#+END_SRC
+
+#+RESULTS:
+: Evaluation took:
+:   0.000 seconds of real time
+:   0.000000 seconds of total run time (0.000000 user, 0.000000 system)
+:   100.00% CPU
+:   103,280 processor cycles
+:   0 bytes consed
+:
+:
+: 381.58136
+
+is much longer then when inlined manually:
+#+BEGIN_SRC lisp :results output :exports both
+  (measure
+      (collect-sum
+       (#M sqrt (cotruncate
+                (series:scan-fn
+                 '(values t t)
+                 (lambda () (values 0 1))
+                 (lambda (a b) (values (+ a b) a)))
+                (scan-range :upto 20)))))
+#+END_SRC
+
+#+RESULTS:
+: Evaluation took:
+:   0.000 seconds of real time
+:   0.000000 seconds of total run time (0.000000 user, 0.000000 system)
+:   100.00% CPU
+:   14,430 processor cycles
+:   0 bytes consed
+:
+:
+: 381.58136
+
+In both cases, I use ~cotruncate~ to limit the number of terms.
+
+What needs to be done - and is non-trivial to find - is informing the package
+that it needs to do the optimization.
+
+#+BEGIN_SRC lisp :results output :exports both
+  (defun fib* ()
+    (declare (optimizable-series-function 1)) ; ← optimize hint
+    (series:scan-fn
+     '(values integer integer)
+     (lambda () (values 0 1))
+     (lambda (a b) (values (+ a b) a))))
+
+  (measure
+   (collect-sum
+    (#M sqrt (cotruncate
+              (fib*)
+              (scan-range :upto 20)))))
+#+END_SRC
+
+#+RESULTS:
+: Evaluation took:
+:   0.000 seconds of real time
+:   0.000000 seconds of total run time (0.000000 user, 0.000000 system)
+:   100.00% CPU
+:   13,650 processor cycles
+:   0 bytes consed
+:
+:
+: 381.58136
+
+The expanded form is rather
+straightforward.
+#+BEGIN_SRC lisp :results output :exports both
+(print (macroexpand-1 '(collect-sum (#M sqrt (cotruncate (fib*) (scan-range :upto 20))))))
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+
+(COMMON-LISP:LET* ((#:STATE-1146 0)
+                   (#:STATE-1145 0)
+                   (#:ITEMS-1147 0)
+                   (#:ITEMS-1144 0)
+                   (#:NUMBERS-1151 (SERIES::COERCE-MAYBE-FOLD (- 0 1) 'NUMBER))
+                   #:ITEMS-1139
+                   (#:SUM-1136 0))
+  (DECLARE (TYPE INTEGER #:STATE-1146)
+           (TYPE INTEGER #:STATE-1145)
+           (TYPE INTEGER #:ITEMS-1147)
+           (TYPE INTEGER #:ITEMS-1144)
+           (TYPE NUMBER #:NUMBERS-1151)
+           (TYPE NUMBER #:SUM-1136))
+  (MULTIPLE-VALUE-SETQ (#:STATE-1146 #:STATE-1145) ((LAMBDA () (VALUES 0 1))))
+  (TAGBODY
+   #:LL-1155
+    (SETQ #:ITEMS-1147 #:STATE-1146
+          #:ITEMS-1144 #:STATE-1145)
+    (MULTIPLE-VALUE-SETQ (#:STATE-1146 #:STATE-1145)
+      ((LAMBDA (A B) (VALUES (+ A B) A)) #:STATE-1146 #:STATE-1145))
+    (SETQ #:NUMBERS-1151
+            (+ #:NUMBERS-1151 (SERIES::COERCE-MAYBE-FOLD 1 'NUMBER)))
+    (IF (> #:NUMBERS-1151 20)
+        (GO SERIES::END))
+    (SETQ #:ITEMS-1139 ((LAMBDA (#:V-1137) (SQRT #:V-1137)) #:ITEMS-1147))
+    (SETQ #:SUM-1136 (+ #:SUM-1136 #:ITEMS-1139))
+    (GO #:LL-1155)
+   SERIES::END)
+  #:SUM-1136)
+#+end_example
