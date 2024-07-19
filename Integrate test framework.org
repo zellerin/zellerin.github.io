@@ -2,7 +2,7 @@
 
 #+html_link_home: ./
 #+html_link_up: ./
-
+#+PROPERTY: header-args:elisp  :tangle ~/.emacs.d/autoloaded.d/fiasco.el
 
 * Summary
 Description of the customizations of the Common Lisp test framework to streamline interaction with tests in emacs.
@@ -45,20 +45,21 @@ The implementation of code-to-test feature is enabled by these assumptions:
 
 Entry point is this function (with keybinding in ~lisp-mode~).
 #+begin_src elisp
+  ;;;###autoload
   (defun tz-asdf-test-system (&optional system prefix)
-  "Compile and test an ASDF SYSTEM."
-  (interactive (list (sly-asdf-find-current-system) prefix-arg))
-  (switch-to-buffer (concat "*" system "*"))
-  (let ((buffer-read-only nil))
-    (delete-region (point-min) (point-max))
-    (insert (sly-eval
-             `(cl:with-output-to-string (cl:*standard-output*)
-                                        (asdf:oos  'asdf:test-op ,system :force nil
-                                                   :verbose ,prefix)))))
-  (fiasco-test-results-mode)
-  (setq-local tested-system system)
-  (goto-char (point-min))
-  (fiasco-next-failure))
+    "Compile and test an ASDF SYSTEM."
+    (interactive (list (sly-asdf-find-current-system) prefix-arg))
+    (switch-to-buffer (concat "*" system "*"))
+    (let ((buffer-read-only nil))
+      (delete-region (point-min) (point-max))
+      (insert (sly-eval
+               `(cl:with-output-to-string (cl:*standard-output*)
+                                          (asdf:oos  'asdf:test-op ,system :force nil
+                                                     :verbose ,prefix)))))
+    (fiasco-test-results-mode)
+    (setq-local tested-system system)
+    (goto-char (point-min))
+    (fiasco-next-failure))
 #+end_src
 
 #+begin_src elisp
@@ -70,15 +71,16 @@ Entry point is this function (with keybinding in ~lisp-mode~).
 
 
 The special mode just highlights suites, successes and errors.
-#+begin_src elisp
-(define-derived-mode fiasco-test-results-mode special-mode "fiasco"
-  "Mode to highlight Fiasco results."
-  (setq font-lock-defaults
-        `((("^[A-Z].* (Suite)" . 'bold)
-           ("^  [A-Z].*\\.\\{1,\\}\\[ OK \\]" . 'success)
-           ("^  [A-Z].*\\.\\{1,\\}\\[FAIL\\]" . 'error)
-           ("^  Failure [0-9]+:" . 'error))
-          nil nil ((?\; . "<") (?\n . ">")))))
+#+begin_src elisp :noweb yes
+  (define-derived-mode fiasco-test-results-mode special-mode "fiasco"
+    "Mode to highlight Fiasco results."
+    (setq font-lock-defaults
+          `((("^[A-Z].* (Suite)" . 'bold)
+             ("^  [A-Z].*\\.\\{1,\\}\\[ OK \\]" . 'success)
+             ("^  [A-Z].*\\.\\{1,\\}\\[FAIL\\]" . 'error)
+             ("^  Failure [0-9]+:" . 'error))
+            nil nil ((?\; . "<") (?\n . ">"))))
+    <<set-other-elisp-variables>>)
 #+end_src
 
 #+begin_src elisp
@@ -114,6 +116,12 @@ Jump to previous and next failure. I am sure there is some code that can be reus
               (search-backward "  Failure " nil t))
       (beginning-of-line-text nil)
       (goto-char point))))
+#+end_src
+
+We can define quite naturally a page to be a test suite. This fails when a doc string has a line without , so do not
+#+NAME: set-other-elisp-variables
+#+begin_src elisp :tangle nil
+(setq-local page-delimiter "^\\_<")
 #+end_src
 
 And finally bind the relevant commands for the new mode.
